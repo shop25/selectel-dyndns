@@ -1,5 +1,5 @@
 {
-    "name": "s25/selectel-dyndns",
+    "name": "shop25/selectel-dyndns",
     "description": "Dynamic DNS for Selectel provider",
     "require": {
         "wumvi/selectel-dns-api": "^1.0",
