@@ -4,7 +4,7 @@ Create or update subdomain for the local machine ip address.
 
 ## Installation
 ```shell
-git clone http://...
+git clone https://github.com/yakimov/selectel-dyndns.git
 cd selectel-dyndns
 composer install
 cp .env.example .env
