@@ -1,0 +1,9 @@
+{
+    "name": "s25/selectel-dyndns",
+    "description": "Dynamic DNS for Selectel provider",
+    "require": {
+        "wumvi/selectel-dns-api": "^1.0",
+        "pear/console_commandline": "^1.2",
+        "vlucas/phpdotenv": "^5.3"
+    }
+}
