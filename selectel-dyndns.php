@@ -11,24 +11,48 @@ use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__);
 $dotenv->load();
-$localHostName  = exec('hostname -s');
-$localIp        = getHostByName($localHostName);
+$localHostName = exec('hostname -s');
 
 $console = new console(['description' => 'Dynamic DNS for Selectel', 'version' => 'application.version']);
 $console->addOption('subdomain', [
     'short_name'    => '-s',
     'long_name'     => '--subdomain',
     'default'       => $localHostName,
-    'description'   => 'Subdomain to control'
+    'description'   => 'subdomain to control'
 ]);
 
+$console->addOption('localhost', [
+    'short_name'    => '-l',
+    'long_name'     => '--localhost',
+    'default'       => false,
+    'description'   => 'if localhost is true will be set 127.0.0.1'
+]);
 
+try {
+    $consoleManager = $console->parse();
+} catch (Exception $e) {
+    die($e->getMessage());
+}
+
+function getIp(Console_CommandLine_Result $consoleManager): string {
+    if($consoleManager->options['localhost'] == true) {
+        return '127.0.0.1';
+    }
+    // Socket_connect will not cause any network traffic because it's an UDP socket.
+    $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+    socket_connect($sock, "8.8.8.8", 53);
+    socket_getsockname($sock, $name); // $name passed by reference
+
+    return $name;
+}
+
+$localIp        = getIp($consoleManager);
 $dnsApi         = new DnsApi($_ENV['SELECTEL_API_KEY']);
 $domainManager  = new ManageDomain($dnsApi);
 $recordManager  = new ManageRecord($dnsApi);
 $domain         = $domainManager->get($_ENV['DOMAIN']);
 $domainId       = $domain['id'];
-$consoleManager = $console->parse();
+
 $host           = sprintf('%s.%s', $consoleManager->options['subdomain'], $_ENV['DOMAIN']);
 
 try {
